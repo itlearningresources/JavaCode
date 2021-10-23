@@ -16,7 +16,8 @@ public class RecursiveFindWithVisualization {
     private static boolean recursiveFind(char c, String sz, Cells cells)  {
 
         // For Visualization ************************
-        Cell cell = new Cell("?",String.valueOf(c),sz);
+        //Cell cell = new Cell("?",String.valueOf(c),sz);
+        Cell cell = new Cell(new Tuple("rtrns","?"),new Tuple("c",String.valueOf(c)), new Tuple("sz",sz));
         cells.put(cell);
         cells.forward();
         System.out.println(cells);
@@ -33,7 +34,7 @@ public class RecursiveFindWithVisualization {
                 bRet = recursiveFind(c, sz.substring(1), cells);
 
         // For Visualization ************************
-        cell.setLastCellRow(bRet ? "true" : "false");
+        cell.setLastCellRow(bRet ? "rtrns true" : "rtrns false");
         cells.backward();
         System.out.println(cells);
         cells.drop();
@@ -47,10 +48,22 @@ public class RecursiveFindWithVisualization {
 // ********************************************************************************************************** 
 // Supporting Classes
 // ********************************************************************************************************** 
+class Tuple {
+   String prefix;
+   String value;
+   public Tuple (String prefix, String value) {
+      this.prefix = prefix;
+      this.value = value;
+   }
+   public String toString() {
+       return String.format("%s = %s", prefix, value);
+   }
+} 
+
 class Cell 
 {
    static final int CELLHEIGHT = 4;
-   static final int CELLWIDTH  = 9;
+   static final int CELLWIDTH  = 15;
    private int cursor = 0;
 
    private String[] cell       = new String[CELLHEIGHT];
@@ -62,6 +75,18 @@ class Cell
        init();
        for (String sz : list) this.put(sz);
        setLastCellRow(last); 
+
+   }
+   public Cell(String last, Tuple ... list) {
+       init();
+       for (Tuple t : list) this.put(t.toString());
+       setLastCellRow(last); 
+
+   }
+   public Cell(Tuple last, Tuple ... list) {
+       init();
+       for (Tuple t : list) this.put(t.toString());
+       setLastCellRow(last.toString()); 
 
    }
    public void setprefix(int n, String sz) {
@@ -86,7 +111,10 @@ class Cell
    }
    public void put(String sz) {
            if ( sz.length() > CELLWIDTH ) {
-               System.out.println("Error: String to too wide for the visualization cell");
+               System.out.println("Error: Input string too wide for the visualization cell");
+               System.out.println("       Increase the size of Cell.CELLWIDTH");
+               System.out.println("       Currently the value of Cell.CELLWIDTH is " + Cell.CELLWIDTH);
+               System.out.println();
                System.exit(1);
            } else {
                setCellRow(sz);
@@ -156,6 +184,13 @@ class Cells
    }
    public int put(Cell cell) {
            cursor++;
+           if ( cursor == MAXCELLS ) {
+               System.out.println("Error: Too many visualization cells are being used");
+               System.out.println("       Increase the size of Cells.MAXCELLS");
+               System.out.println("       Currently the value of Cells.MAXCELLS is " + Cells.MAXCELLS);
+               System.out.println();
+               System.exit(1);
+           }
            cursor = (cursor == MAXCELLS) ? 0 : cursor;
            this.cells[cursor] = cell;
            return cursor;
