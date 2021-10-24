@@ -16,10 +16,10 @@ public class RecursiveFindWithVisualization {
     private static boolean recursiveFind(char c, String sz, Cells cells)  {
 
         // For Visualization ************************
-        //Cell cell = new Cell("?",String.valueOf(c),sz);
         Cell cell = new Cell(new Tuple("rtrns","?"),new Tuple("c",String.valueOf(c)), new Tuple("sz",sz));
         cells.put(cell);
         cells.forward();
+        cells.setTagCall();
         System.out.println(cells);
         // *****************************************
 
@@ -36,6 +36,7 @@ public class RecursiveFindWithVisualization {
         // For Visualization ************************
         cell.setLastCellRow(bRet ? "rtrns true" : "rtrns false");
         cells.backward();
+        cells.setTagReturn();
         System.out.println(cells);
         cells.drop();
         // *****************************************
@@ -149,14 +150,17 @@ class Cells
    private int cursor = EMPTY;
    private String szBetween    = " >> ";
    private String szBetweenBar = "    ";
+   private String tag = "";
 
    public Cells() {
        cursor = EMPTY;
+       tag = "";
        forward();
    }
    public Cells(Cell ... list) {
        cursor = EMPTY;
        forward();
+       tag = "";
        for (Cell c : list) {
            put(c);
        }
@@ -198,10 +202,18 @@ class Cells
    public void setCellRow(int i, Cell cell) {
            this.cells[i] = cell;
    }
-
+   public void setTagBlank() {
+       tag = "";
+   }
+   public void setTagCall() {
+       tag = "Call";
+   }
+   public void setTagReturn() {
+       tag= "Return";
+   }
    public String toString() {
        StringBuilder sb = new StringBuilder();
-       String bar = StringUtilities.bar(Cell.CELLWIDTH);
+       String bar = StringUtilities.bar(Cell.CELLWIDTH, tag);
        if (cursor > EMPTY ) {
            for (int j=0;j<=cursor;j++) sb.append(bar).append(szBetweenBar);
            sb.append(StringUtilities.NL);
@@ -216,6 +228,7 @@ class Cells
                sb.append(StringUtilities.NL);
            }
 
+           bar = StringUtilities.bar(Cell.CELLWIDTH);
            for (int j=0;j<=cursor;j++) sb.append(bar).append(szBetweenBar);
            sb.append(StringUtilities.NL);
 
@@ -260,6 +273,10 @@ class StringUtilities {
 
     public static String bar(int size) {
         return MARK + repeat(size, "-")  + MARK;
+    }
+    public static String bar(int size, String tag) {
+        size = size - tag.length();
+        return MARK + tag + repeat(size, "-")  + MARK;
     }
     
 }
